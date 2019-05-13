@@ -152,6 +152,16 @@ public class LoginForm extends javax.swing.JFrame {
         PreparedStatement ps;
         ResultSet rs;
         
+        // get the username & the password
+        String username = jTextFieldUserName.getText();
+        String password = String.valueOf(jPasswordField1.getPassword());
+        
+        // check if the username is empty
+        if(username.trim().equals(""))
+        {
+            
+        }
+        
         
         
     }//GEN-LAST:event_jButtonLoginActionPerformed
