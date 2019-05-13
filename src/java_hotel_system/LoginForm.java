@@ -1,5 +1,8 @@
 package java_hotel_system;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author german
@@ -85,6 +88,11 @@ public class LoginForm extends javax.swing.JFrame {
         jButtonLogin.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jButtonLogin.setForeground(new java.awt.Color(255, 255, 255));
         jButtonLogin.setText("Login");
+        jButtonLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLoginActionPerformed(evt);
+            }
+        });
 
         jPasswordField1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jPasswordField1.setText("jPasswordField1");
@@ -138,6 +146,15 @@ public class LoginForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
+        
+        PreparedStatement ps;
+        ResultSet rs;
+        
+        
+        
+    }//GEN-LAST:event_jButtonLoginActionPerformed
 
     /**
      * @param args the command line arguments
