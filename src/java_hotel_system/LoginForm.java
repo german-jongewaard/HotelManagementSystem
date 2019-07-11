@@ -2,6 +2,10 @@ package java_hotel_system;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -14,6 +18,8 @@ public class LoginForm extends javax.swing.JFrame {
      */
     public LoginForm() {
         initComponents();
+        
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -79,6 +85,7 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel2.setText("User Name:");
 
         jTextFieldUserName.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jTextFieldUserName.setText("testuser");
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
@@ -95,7 +102,7 @@ public class LoginForm extends javax.swing.JFrame {
         });
 
         jPasswordField1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jPasswordField1.setText("jPasswordField1");
+        jPasswordField1.setText("pass");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -159,6 +166,51 @@ public class LoginForm extends javax.swing.JFrame {
         // check if the username is empty
         if(username.trim().equals(""))
         {
+            JOptionPane.showMessageDialog(rootPane, "Enter your User name to Login", "Empty User name", 2);
+            
+        }else if(password.trim().equals(""))
+        {
+            JOptionPane.showMessageDialog(rootPane, "Enter your Password to Login", "Empty Password", 2);
+        }
+        else
+        {
+            MY_CONNECTION myconnection = new MY_CONNECTION();
+            //create the select query
+            String selectQuery = "SELECT * FROM `users` WHERE `username`=? and `password`=?";
+            
+            try {
+                ps = myconnection.createConnection().prepareStatement(selectQuery);
+                
+                ps.setString(1, username);
+                ps.setString(2, password);
+                
+                rs = ps.executeQuery();
+                
+                if(rs.next())
+                {
+                    //If this user exist open the main from and close the login form
+                    MainForm mainform = new MainForm();
+                    mainform.setVisible(true);
+                    mainform.pack();
+                    mainform.setLocationRelativeTo(null);
+                    
+                    this.dispose();
+                    
+                }else
+                {
+                    // if the user enter the wrong information
+                    JOptionPane.showMessageDialog(rootPane, "Wrong UserName", "Login Error", 2);
+
+                    
+                }
+                
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+            }
+            
+            
             
         }
         
