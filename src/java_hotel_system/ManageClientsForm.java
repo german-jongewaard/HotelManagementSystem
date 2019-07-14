@@ -10,6 +10,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -65,6 +66,7 @@ public class ManageClientsForm extends javax.swing.JFrame {
         jButtonEditClient = new javax.swing.JButton();
         jButtonRemoveClient = new javax.swing.JButton();
         jButtonClearFieldsClient = new javax.swing.JButton();
+        jButtonRefresh_JTableData = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -136,6 +138,13 @@ public class ManageClientsForm extends javax.swing.JFrame {
         // make the jtable cells not editable
         {public boolean isCellEditable(int row, int column){return false;}}
     );
+    jTable1.setGridColor(new java.awt.Color(255, 255, 0));
+    jTable1.setSelectionBackground(new java.awt.Color(0, 153, 0));
+    jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            jTable1MouseClicked(evt);
+        }
+    });
     jScrollPane1.setViewportView(jTable1);
 
     jButtonAddNewClient.setBackground(new java.awt.Color(255, 255, 0));
@@ -178,12 +187,20 @@ public class ManageClientsForm extends javax.swing.JFrame {
         }
     });
 
+    jButtonRefresh_JTableData.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+    jButtonRefresh_JTableData.setText("Refresh");
+    jButtonRefresh_JTableData.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButtonRefresh_JTableDataActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addGroup(jPanel1Layout.createSequentialGroup()
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
             .addGap(39, 39, 39)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -211,7 +228,9 @@ public class ManageClientsForm extends javax.swing.JFrame {
                             .addGap(18, 18, 18)
                             .addComponent(jButtonRemoveClient, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))))
             .addGap(66, 66, 66)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 720, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(jButtonRefresh_JTableData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE))
             .addGap(42, 42, 42))
     );
     jPanel1Layout.setVerticalGroup(
@@ -248,7 +267,9 @@ public class ManageClientsForm extends javax.swing.JFrame {
                     .addGap(18, 18, 18)
                     .addComponent(jButtonClearFieldsClient, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(0, 64, Short.MAX_VALUE))
+            .addGap(18, 18, 18)
+            .addComponent(jButtonRefresh_JTableData, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 26, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -260,8 +281,8 @@ public class ManageClientsForm extends javax.swing.JFrame {
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 43, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addContainerGap())
     );
 
     pack();
@@ -282,7 +303,7 @@ public class ManageClientsForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane,"Required Fields --> First/Last Name + The Phone Number", "Empty", JOptionPane.WARNING_MESSAGE);            
         }else{
             
-            if(client.addclient(fname, lname, phone, email))
+            if(client.addClient(fname, lname, phone, email))
             {            
                 JOptionPane.showMessageDialog(rootPane,"New Client Added Succesfully", "Add Client", JOptionPane.INFORMATION_MESSAGE);            
             }else{
@@ -291,22 +312,107 @@ public class ManageClientsForm extends javax.swing.JFrame {
             
         }
 
-       
-
-
     }//GEN-LAST:event_jButtonAddNewClientActionPerformed
 
     private void jButtonEditClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditClientActionPerformed
-        // TODO add your handling code here:
+        
+        // edit the selected client
+         // get data from the fields
+         int id = 0;
+        String fname = jTextFieldFNAME.getText();
+        String lname = jTextFieldLNAME.getText();
+        String phone = jTextFieldPHONE.getText();
+        String email = jTextFieldEMAIL.getText();        
+        
+        if(fname.trim().equals("") || lname.trim().equals("") || phone.trim().equals(""))
+        {            
+            JOptionPane.showMessageDialog(rootPane,"Required Fields --> First/Last Name + The Phone Number", "Empty", JOptionPane.WARNING_MESSAGE);            
+        }else{
+            
+            try { 
+            
+                id = Integer.valueOf(jTextFieldID.getText());  
+                
+                 if(client.editClient(id, fname, lname, phone, email))
+            {            
+                JOptionPane.showMessageDialog(rootPane,"Client Data Update Succesfully", "Edit Client", JOptionPane.INFORMATION_MESSAGE);            
+            }else{
+                JOptionPane.showMessageDialog(rootPane,"Client Data Not Update", "Edit Client Error", JOptionPane.ERROR_MESSAGE);
+            }
+                
+            }
+            catch (NumberFormatException e) 
+            {
+
+                JOptionPane.showMessageDialog(rootPane,e.getMessage() + " - Enter The client Id (number)", "Client Id Error", JOptionPane.ERROR_MESSAGE);            
+                
+            }
+        }     
+        
     }//GEN-LAST:event_jButtonEditClientActionPerformed
 
     private void jButtonRemoveClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoveClientActionPerformed
-        // TODO add your handling code here:
+        // delete the selected client
+        
+         try { 
+            
+                int id = Integer.valueOf(jTextFieldID.getText());  
+                
+                 if(client.removeClient(id))
+            {            
+                JOptionPane.showMessageDialog(rootPane,"Client Deleted Succesfully", "Remove Client", JOptionPane.INFORMATION_MESSAGE);            
+            }else{
+                JOptionPane.showMessageDialog(rootPane,"Client Not deleted", "Remove Client Error", JOptionPane.ERROR_MESSAGE);
+            }
+                
+            }
+            catch (NumberFormatException e) 
+            {
+
+                JOptionPane.showMessageDialog(rootPane,e.getMessage() + " - Enter The client Id (number)", "client Id Error", JOptionPane.ERROR_MESSAGE);            
+                
+            }
     }//GEN-LAST:event_jButtonRemoveClientActionPerformed
 
     private void jButtonClearFieldsClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearFieldsClientActionPerformed
-        // TODO add your handling code here:
+        // remove text from all jtextfields
+        jTextFieldID.setText("");
+        jTextFieldFNAME.setText("");
+        jTextFieldLNAME.setText("");
+        jTextFieldPHONE.setText("");
+        jTextFieldEMAIL.setText("");
     }//GEN-LAST:event_jButtonClearFieldsClientActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        
+        // display the selected row data in the jtextfiels
+        
+        // get the jlabel model
+        DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
+        
+        // get the selected row index
+        int rIndex = jTable1.getSelectedRow();
+        
+        // display data 
+        jTextFieldID.setText(model.getValueAt(rIndex, 0).toString());
+        jTextFieldFNAME.setText(model.getValueAt(rIndex, 1).toString());
+        jTextFieldLNAME.setText(model.getValueAt(rIndex, 2).toString());
+        jTextFieldPHONE.setText(model.getValueAt(rIndex, 3).toString());
+        jTextFieldEMAIL.setText(model.getValueAt(rIndex, 4).toString());
+        
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButtonRefresh_JTableDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefresh_JTableDataActionPerformed
+        
+        // clear the jtble1 first
+        jTable1.setModel(new DefaultTableModel(null, new Object[]{"ID","First Name","Last Name","Phone","Email"}));
+        
+        
+        // populate the jtable
+        client.fillClientTable(jTable1);
+        
+        
+    }//GEN-LAST:event_jButtonRefresh_JTableDataActionPerformed
 
     /**
      * @param args the command line arguments
@@ -347,6 +453,7 @@ public class ManageClientsForm extends javax.swing.JFrame {
     private javax.swing.JButton jButtonAddNewClient;
     private javax.swing.JButton jButtonClearFieldsClient;
     private javax.swing.JButton jButtonEditClient;
+    private javax.swing.JButton jButtonRefresh_JTableData;
     private javax.swing.JButton jButtonRemoveClient;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
