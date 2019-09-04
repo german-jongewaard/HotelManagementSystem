@@ -1,15 +1,17 @@
 package java_hotel_system;
 
 
+ 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author german
+ * @author german 
  */
 public class MY_CONNECTION {
     // In this class we will make our connection with the mysql database
@@ -23,11 +25,20 @@ public class MY_CONNECTION {
     
     //create a funcion to connect with mysql
     
+    
+    
     public Connection createConnection()
     {
+        
         Connection connection = null;
         
         MysqlDataSource mds = new MysqlDataSource();
+        
+        try {
+            mds.setServerTimezone("UTC");
+        } catch (SQLException ex) {
+            Logger.getLogger(MY_CONNECTION.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         mds.setServerName("localhost");
         mds.setPortNumber(3306);
